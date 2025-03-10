@@ -14,5 +14,7 @@ class User(BaseModel):
     password: str 
     role: str 
     agency_id: Optional[str] = None  
+    class Config:
+        orm_mode = True
 
     

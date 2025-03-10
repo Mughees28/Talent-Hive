@@ -8,7 +8,9 @@ class Bid(BaseModel):
     task_id: str 
     bidder_id: str  
     amount: float  
-    message: str  
     status: str = "pending"  
 
-    
+class BidCreate(BaseModel):
+    task_id: str  
+    amount: float  
+      

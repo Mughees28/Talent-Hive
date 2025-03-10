@@ -11,12 +11,19 @@ class Task(BaseModel):
     client_id: str  
     assigned_to: Optional[str] = None  
     status: str = "open"  
+    class Config:
+        orm_mode = True
 
 class Taskcreate(BaseModel):
     title: str
     description: str
     budget: int
     deadline: str
+
+    class Config:
+        orm_mode = True
    
-   
+class Taskupdate(BaseModel):
+    assigned_to: Optional[str] = None
+    status: Optional[str] = None
    
