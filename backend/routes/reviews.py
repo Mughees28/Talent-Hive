@@ -16,15 +16,18 @@ async def submit_review(review: Reviewcreate, current_user: dict = Depends(get_c
     
     task = tasks_collection.find_one({"_id": ObjectId(review.task_id)})
 
-    if str(task["_id"]) == review.task_id:
-        raise HTTPException(status_code=403, detail="Review already exist")
-
-
+    
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     
+    if str(task["_id"]) == review.task_id:
+        raise HTTPException(status_code=403, detail="Review already exist")
+    
     if task["status"] != "completed":
         raise HTTPException(status_code=400, detail="Task must be completed before reviewing")
+    
+    if task["is_approved"] != True:
+        raise HTTPException(status_code=400, detail="Task must be approved before reviewing")
 
    
     if task.get("assigned_to") != review.reviewee_id:

@@ -23,7 +23,9 @@ class Taskcreate(BaseModel):
     class Config:
         orm_mode = True
    
-class Taskupdate(BaseModel):
+class TaskUpdate(BaseModel):
     assigned_to: Optional[str] = None
     status: Optional[str] = None
+    is_approved: Optional[bool] = None
+
    
