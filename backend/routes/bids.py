@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException,Depends
 from pydantic import BaseModel, EmailStr
 from models.bid import BidCreate 
-from database import tasks_collection,users_collection,bids_collection
+from database import tasks_collection,bids_collection
 from oauth2 import get_current_user
 from bson import ObjectId
 
@@ -18,9 +18,56 @@ async def place_bid(bid: BidCreate, current_user: dict = Depends(get_current_use
         raise HTTPException(status_code=404, detail="Task not found")
 
     bid_dict = bid.dict()
-    bid_dict["freelancer_id"] = current_user["_id"]  
+    bid_dict["bidder_id"] = ObjectId(current_user["_id"])  
+    bid_dict["task_id"] = ObjectId(bid.task_id)
 
-    inserted_bid = bids_collection.insert_one(bid_dict)
-    bid_dict["_id"] = str(inserted_bid.inserted_id)  
+    inserted_bid = bids_collection.insert_one(bid_dict) 
+    response_bid = bid_dict.copy()
+    response_bid["_id"] = str(inserted_bid.inserted_id)
+    response_bid["bidder_id"] = str(response_bid["bidder_id"])
+    response_bid["task_id"] = str(response_bid["task_id"])
 
-    return {"message": "Bid placed successfully", "bid": bid_dict}
+    return {"message": "Bid placed successfully","bid":response_bid}
+
+
+@router.get("/{bid_id}")
+async def get_bid(bid_id: str, current_user: dict = Depends(get_current_user)):
+    bid = bids_collection.find_one({"_id": ObjectId(bid_id)})
+    if not bid:
+        raise HTTPException(status_code=404, detail="Bid not found")
+    
+   
+    bid["_id"] = str(bid["_id"])
+    bid["bidder_id"] = str(bid["bidder_id"]) 
+    bid["task_id"] = str(bid["task_id"])
+    
+    return bid
+
+@router.get("/task/{task_id}")
+async def get_bids_by_task(task_id: str, current_user: dict = Depends(get_current_user)):
+    bids = list(bids_collection.find({"task_id": ObjectId(task_id)}))
+    
+    # Convert ObjectIds to strings for response
+    for bid in bids:
+        bid["_id"] = str(bid["_id"])
+        bid["bidder_id"] = str(bid["bidder_id"])
+        bid["task_id"] = str(bid["task_id"])
+    
+    return bids
+
+
+@router.delete("/{bid_id}")
+async def delete_bid(bid_id: str, current_user: dict = Depends(get_current_user)):
+    bid = bids_collection.find_one({"_id": ObjectId(bid_id)})
+    if not bid:
+        raise HTTPException(status_code=404, detail="Bid not found")
+    
+ 
+    if str(bid["bidder_id"]) != str(current_user["_id"]):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this bid")
+    
+    result = bids_collection.delete_one({"_id": ObjectId(bid_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bid not found")
+    
+    return {"message": "Bid deleted successfully"}

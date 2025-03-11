@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from database import db
-from routes import signup, login, tasks,bids
+from routes import signup, login, tasks,bids, users, reviews, payments
 
 
 
@@ -10,6 +10,9 @@ app.include_router(signup.router)
 app.include_router(login.router)
 app.include_router(tasks.router)
 app.include_router(bids.router)
+app.include_router(users.router)
+app.include_router(reviews.router)
+app.include_router(payments.router)
 
 
 @app.get("/")
