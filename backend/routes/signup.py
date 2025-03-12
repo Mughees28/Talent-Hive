@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from database import users_collection
+from models.user import Usersignup
 from config import hash_password 
+from typing import Optional
 
 
 
@@ -9,17 +11,9 @@ router = APIRouter()
 
 
 
-class UserSignup(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    role: str  
-    agency_id: str = None  
-
-
 
 @router.post("/signup")
-async def register(user: UserSignup):
+async def register(user: Usersignup):
    
     existing_user = users_collection.find_one({"email": user.email})
     if existing_user:

@@ -76,4 +76,6 @@ async def get_payment_by_user(user_id:str, current_user: dict = Depends(get_curr
     return {"total_amout":total_amount}
         
 
-
+@router.get("/task_id}")
+async def calculate_commision(task_id:str, current_user: dict = Depends(get_current_user)):
+    

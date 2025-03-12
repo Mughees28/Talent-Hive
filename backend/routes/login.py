@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from database import users_collection
 from config import  verify_password
-
+from models.user import Userlogin
 from database import users_collection
 # from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
@@ -12,16 +12,8 @@ from database import users_collection
 router = APIRouter()
 
 
-
-class UserLogin(BaseModel):
-
-    email: EmailStr
-    password: str
-     
-
-
 @router.post("/login")
-async def login(user: UserLogin):
+async def login(user: Userlogin):
    
     db_user = users_collection.find_one({"email": user.email})
     if not db_user:

@@ -3,18 +3,22 @@ from typing import Optional
 
 
 
-def to_object_id(id: str) -> ObjectId:
-    return ObjectId(id)
-
-
-class User(BaseModel):
-    id: Optional[str] = Field(None, alias="_id")  
+class Usersignup(BaseModel):
     name: str
     email: EmailStr
-    password: str 
-    role: str 
-    agency_id: Optional[str] = None  
-    class Config:
-        orm_mode = True
-
+    password: str
+    role: str  
+    agency_name: Optional[str] = None  
     
+
+class Userlogin(BaseModel):
+
+    email: EmailStr
+    password: str
+
+class AddFreelancer(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    skill: str
+    agency_id: str
