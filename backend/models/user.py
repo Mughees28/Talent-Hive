@@ -21,4 +21,3 @@ class AddFreelancer(BaseModel):
     email: EmailStr
     password: str
     skill: str
-    agency_id: str

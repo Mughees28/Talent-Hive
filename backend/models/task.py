@@ -30,6 +30,7 @@ class Taskupdate(BaseModel):
 
    
 class SubTaskcreate(BaseModel):
+    task_id: str
     description: str
     deadline: str
     assigned_to: str

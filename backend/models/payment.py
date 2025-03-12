@@ -17,4 +17,5 @@ class Paymentcreate(BaseModel):
     task_id : str
     receiver_id: str
     total_amount: int
+    status: str = "pending" 
     

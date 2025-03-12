@@ -48,12 +48,17 @@ async def create_sub_Task(task :SubTaskcreate ,current_user: dict = Depends(get_
     if current_user["role"] != "agency_owner":
         raise HTTPException(status_code=403, detail="Not Authenticated to Create subtask")
     
-    task_dict = task.dict()
+    parent_task = tasks_collection.find_one({"_id": ObjectId(task.task_id)})
+    if not parent_task:
+        raise HTTPException(status_code=404, detail="Parent task not found")
+
     
-    task_dict["agency_id"] = current_user["_id"] 
-    task_dict["category"] = "subtask"
+    subtask_dict = task.dict()
     
-    tasks_collection.insert_one(task_dict)
+    subtask_dict["agency_id"] = current_user["_id"] 
+    subtask_dict["category"] = "subtask"
+    
+    tasks_collection.insert_one(subtask_dict)
 
     return {"message": "sub-Task added successfully"}
 
@@ -182,8 +187,9 @@ async def get_task(task_id: str, current_user: dict = Depends(get_current_user))
 
 
 @router.delete("/{task_id}")
-async def get_tasks(id:str, current_user: dict = Depends(get_current_user)):
-     task = tasks_collection.find_one({"_id": ObjectId(id)})
+async def delete_tasks(task_id:str, current_user: dict = Depends(get_current_user)):
+    
+     task = tasks_collection.find_one({"_id": ObjectId(task_id)})
      if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
@@ -197,17 +203,18 @@ async def get_tasks(id:str, current_user: dict = Depends(get_current_user)):
 
 
 
-@router.put("/{user_id}")
+@router.put("/{task_id}")
 async def update_posted_task(task_id: str, update_data: Taskupdate, current_user: dict = Depends(get_current_user)):
+ 
+    task = tasks_collection.find_one({"_id": ObjectId(task_id)})
 
     if task["client_id"] != current_user["_id"]:
         raise HTTPException(status_code=403, detail="Unauthorized to update this task")
 
-    task = tasks_collection.find_one({"_id": ObjectId(task_id)})
+    
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-   
    
     update_dict = update_data.dict(exclude_none=True)
 
@@ -218,7 +225,7 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
 
 
 @router.put("/approve/{task_id}")
-async def update_task_approved(task_id: str, current_user: dict = Depends(get_current_user)):
+async def approve_task(task_id: str, current_user: dict = Depends(get_current_user)):
     
     task = tasks_collection.find_one({"_id": ObjectId(task_id)})
 

@@ -13,4 +13,4 @@ class Bid(BaseModel):
 class BidCreate(BaseModel):
     task_id: str  
     amount: float  
-      
+    status: str = "pending"  

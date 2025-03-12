@@ -71,3 +71,31 @@ async def delete_bid(bid_id: str, current_user: dict = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="Bid not found")
     
     return {"message": "Bid deleted successfully"}
+
+@router.put("/{bid_id}/approve")
+async def approve_bid(bid_id: str, current_user: dict = Depends(get_current_user)):
+    
+    bid = bids_collection.find_one({"_id": ObjectId(bid_id)})
+    if not bid:
+        raise HTTPException(status_code=404, detail="Bid not found")
+
+    task = tasks_collection.find_one({"_id": ObjectId(bid["task_id"])})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if task["client_id"] != current_user["_id"]:
+        raise HTTPException(status_code=403, detail="Not authorized to approve this bid")
+
+    bids_collection.update_one({"_id": ObjectId(bid_id)}, {"$set": {"status": "approved"}})
+
+    tasks_collection.update_one(
+        {"_id": ObjectId(bid["task_id"])},
+        {"$set": {"assigned_to": str(bid["bidder_id"]), "status": "in_progress"}}
+    )
+
+    bids_collection.update_many(
+        {"task_id": ObjectId(bid["task_id"]), "_id": {"$ne": ObjectId(bid_id)}},
+        {"$set": {"status": "rejected"}}
+    )
+
+    return {"message": "Bid approved successfully, task assigned to bidder"}
