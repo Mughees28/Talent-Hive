@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from models.payment import PaymentCreate
+from models.payment import Paymentcreate
 from database import tasks_collection, payments_collection, users_collection, bids_collection
 from oauth2 import get_current_user
 from bson import ObjectId
@@ -7,7 +7,7 @@ from bson import ObjectId
 router = APIRouter(prefix="/payments")
 
 @router.post("/")
-async def post_payments(payment: PaymentCreate, current_user: dict = Depends(get_current_user)):
+async def post_payments(payment: Paymentcreate, current_user: dict = Depends(get_current_user)):
    
     task = tasks_collection.find_one({"_id": ObjectId(payment.task_id)})
     if not task:

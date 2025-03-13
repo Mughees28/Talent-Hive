@@ -13,7 +13,7 @@ class Usersignup(BaseModel):
 
 class Userlogin(BaseModel):
 
-    email: EmailStr
+    email: str
     password: str
 
 class AddFreelancer(BaseModel):
