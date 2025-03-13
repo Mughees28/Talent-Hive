@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import API from "../api";
+import "../styles/Signup.css"; // Import CSS
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     name: "",
     email: "",
     password: "",
     role: "client",
+    agency_name: "", // Add agency_name field
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -15,27 +20,50 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await API.post("/signup", userData);
+      
       alert(response.data.message);
+      navigate("/login");
+      
     } catch (error) {
-      alert("Signup failed. Try again.");
+      alert(error.response.data.detail);
+      // alert("Signup failed. Try again.",error);
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="p-5">
-      <h2 className="text-xl font-bold">Sign Up</h2>
-      <form onSubmit={handleSignup} className="space-y-3">
-        <input type="text" name="name" placeholder="Name" className="border p-2 w-full" onChange={handleChange} />
-        <input type="email" name="email" placeholder="Email" className="border p-2 w-full" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" className="border p-2 w-full" onChange={handleChange} />
-        <select name="role" className="border p-2 w-full" onChange={handleChange}>
+    <div className="signup-container">
+      <h2 className="signup-title">Sign Up</h2>
+      <form onSubmit={handleSignup} className="signup-form">
+        <input type="text" name="name" placeholder="Name" className="signup-input" onChange={handleChange} required />
+        <input type="email" name="email" placeholder="Email" className="signup-input" onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Password" className="signup-input" onChange={handleChange} required />
+
+        <select name="role" className="signup-input" onChange={handleChange} required>
           <option value="client">Client</option>
           <option value="freelancer">Freelancer</option>
           <option value="agency_owner">Agency Owner</option>
         </select>
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">Sign Up</button>
+
+        {/* Conditionally Show Agency Name Input */}
+        {userData.role === "agency_owner" && (
+          <input
+            type="text"
+            name="agency_name"
+            placeholder="Agency Name"
+            className="signup-input"
+            onChange={handleChange}
+            required
+          />
+        )}
+
+        <button type="submit" className={`signup-button ${isLoading? "loading" : ""}`} disabled={isLoading}>
+          {isLoading? "Signing up ...." : "Sign Up" }</button>
       </form>
     </div>
   );

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Signup from "./components/Signup.jsx";
 import Login from "./components/Login.jsx";
 import Dashboard from "./components/Dashboard.jsx";
+import Navbar from "./components/Navbar";
 
 const ProtectedRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token) || localStorage.getItem("token");
@@ -13,13 +14,16 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+       <Navbar />
       <Routes>
-        <Route path="/" element={<Signup />} />
+        
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
+             
               <Dashboard />
             </ProtectedRoute>
           }

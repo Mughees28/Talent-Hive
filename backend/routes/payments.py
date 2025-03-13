@@ -113,7 +113,7 @@ async def get_client_spending(client_id: str, current_user: dict = Depends(get_c
         "transactions": spendings
     }
 
-@router.get("/{user_id}/earnings")
+@router.get("/earnings/{user_id}")
 async def get_user_earnings(user_id: str, current_user: dict = Depends(get_current_user)):
     
     user = users_collection.find_one({"_id": ObjectId(user_id)}, {"password": 0})
@@ -130,9 +130,9 @@ async def get_user_earnings(user_id: str, current_user: dict = Depends(get_curre
    
     for payment in earnings:
         payment["_id"] = str(payment["_id"])
-        payment["task_id"] = str(payment["task_id"])
+        # payment["task_id"] = str(payment["task_id"])
         payment["client_id"] = str(payment["client_id"])
-        payment["receiver_id"] = str(payment["receiver_id"])
+        # payment["receiver_id"] = str(payment["receiver_id"])
 
   
     total_earned = sum(payment["total_amount"] for payment in earnings)
