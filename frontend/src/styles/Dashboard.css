@@ -1,0 +1,46 @@
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .dashboard-left {
+    width: 65%;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboard-right {
+    width: 30%;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-section {
+    margin-top: 20px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .stat-box {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    flex: 1;
+    margin: 5px;
+  }
+  

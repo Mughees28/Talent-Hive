@@ -115,17 +115,19 @@ async def get_client_spending(client_id: str, current_user: dict = Depends(get_c
 
 @router.get("/earnings/{user_id}")
 async def get_user_earnings(user_id: str, current_user: dict = Depends(get_current_user)):
-    
+   
     user = users_collection.find_one({"_id": ObjectId(user_id)}, {"password": 0})
+    
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
    
-    if user["role"] not in ["freelancer", "agency_owner"]:
-        raise HTTPException(status_code=403, detail="Only freelancers or agencies have earnings records")
+    if user["role"] in ["freelancer", "agency_owner","agency_freelancer"]:
+        earnings = list(payments_collection.find({"receiver_id": user_id}))
 
+    else:
+         earnings = list(payments_collection.find({"client_id": user_id}))
     
-    earnings = list(payments_collection.find({"receiver_id": ObjectId(user_id)}))
 
    
     for payment in earnings:

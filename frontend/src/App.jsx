@@ -5,6 +5,7 @@ import Signup from "./components/Signup.jsx";
 import Login from "./components/Login.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import Navbar from "./components/Navbar";
+import PostTask from "./components/PostTask";
 
 const ProtectedRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token) || localStorage.getItem("token");
@@ -19,6 +20,7 @@ function App() {
         
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        
         <Route
           path="/dashboard"
           element={
@@ -27,7 +29,9 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }
+          
         />
+        <Route path="/post-task" element={<ProtectedRoute><PostTask /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

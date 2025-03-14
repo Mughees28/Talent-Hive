@@ -25,7 +25,7 @@ class Taskcreate(BaseModel):
    
 class Taskupdate(BaseModel):
     assigned_to: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[str] = "open"
     is_approved: Optional[bool] = None
 
    

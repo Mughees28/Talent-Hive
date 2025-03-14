@@ -1,101 +1,101 @@
-/* Navbar container */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 20px;
-    background-color: #2e8b57; /* Greenish background */
-    color: white;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Left side - Project Name */
-  .project-name {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-decoration: none;
-    color: white;
-  }
-  
-  /* Right side */
-  .navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  /* Earnings/Spendings */
-  .earnings {
-    font-size: 1rem;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 12px;
-    border-radius: 8px;
-  }
-  
-  /* Profile Dropdown */
-  .profile-dropdown {
-    position: relative;
-  }
-  
-  .profile-btn {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .profile-btn:hover {
-    text-decoration: underline;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    top: 30px;
-    right: 0;
-    background: white;
-    color: black;
-    min-width: 150px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    z-index: 10;
-  }
-  
-  .profile-dropdown:hover .dropdown-content {
-    display: block;
-  }
-  
-  .dropdown-content a,
-  .dropdown-content button {
-    display: block;
-    padding: 10px;
-    text-decoration: none;
-    color: black;
-    text-align: left;
-    background: none;
-    border: none;
-    width: 100%;
-  }
-  
-  .dropdown-content button:hover,
-  .dropdown-content a:hover {
-    background: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Login Button */
-  .login-btn {
-    background-color: white;
-    color: #2e8b57;
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  .login-btn:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+}
+
+.project-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.earnings {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.profile-btn:hover {
+  opacity: 0.8;
+}
+
+.dropdown-content {
+  position: absolute;
+  right: 0;
+  background: white;
+  color: black;
+  min-width: 120px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+  font-size: 0.9rem;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background: #e0e0e0;
+}
+
+.login-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  opacity: 0.8;
+}
+.post-task-btn {
+  margin-right: 15px;
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.post-task-btn:hover {
+  background-color: #218838;
+}

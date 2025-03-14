@@ -10,8 +10,11 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/tasks")
 
-@router.post("/")
+@router.post("/createtask")
 async def createTask(task : Taskcreate,current_user: dict = Depends(get_current_user)):
+
+    if current_user["role"] !="client":
+        raise HTTPException(status_code=403, detail="Only Clients can create tasks")
 
     task_dict = task.dict()
     
@@ -122,6 +125,9 @@ async def get_assigned_task(current_user: dict = Depends(get_current_user)):
             "assigned_to": current_user["_id"]
         }))
 
+    total_assigned = len(tasks)
+    
+
     if not tasks:
         raise HTTPException(status_code=404, detail="No Assigned tasks found")
     
@@ -130,29 +136,31 @@ async def get_assigned_task(current_user: dict = Depends(get_current_user)):
         task["client_id"] = str(task["client_id"])
         task["assigned_to"] = str(task["assigned_to"])
 
-    return {"tasks": tasks}
+    return {"tasks": tasks,"total_assigned":total_assigned}
 
 @router.get("/posted")
 async def get_posted_task(current_user: dict = Depends(get_current_user)):
-    
+    tasks=[]
     if current_user["role"] == "client":
         tasks = list(tasks_collection.find({
             "client_id": current_user["_id"]
         }))
 
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No Assigned tasks found")
-    
+    # if not tasks:
+    #     raise HTTPException(status_code=404, detail="No Posted tasks found")
+    total_posted = len(tasks)
     for task in tasks:
         task["_id"] = str(task["_id"])
         task["client_id"] = str(task["client_id"])
-        task["assigned_to"] = str(task["assigned_to"])
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
 
-    return {"tasks": tasks}
+    return {"tasks": tasks,"total_posted":total_posted}
+
 
 @router.get("/completed")
 async def get_completed_task(current_user: dict = Depends(get_current_user)):
-    
+    print("in completed")
     if current_user["role"] == "client":
         tasks = list(tasks_collection.find({
             "status": "completed",
@@ -163,16 +171,17 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
             "status": "completed",
             "assigned_to": current_user["_id"]
         }))
+    total_completed = len(tasks)
 
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No completed tasks found")
+    # if not tasks:
+    #     raise HTTPException(status_code=404, detail="No completed tasks found")
     
     for task in tasks:
         task["_id"] = str(task["_id"])
         task["client_id"] = str(task["client_id"])
         task["assigned_to"] = str(task["assigned_to"])
 
-    return {"tasks": tasks}
+    return {"tasks": tasks,"total_completed":total_completed}
 
 @router.get("/{task_id}")
 async def get_task(task_id: str, current_user: dict = Depends(get_current_user)):
