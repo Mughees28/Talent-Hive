@@ -27,6 +27,7 @@ class Taskupdate(BaseModel):
     assigned_to: Optional[str] = None
     status: Optional[str] = "open"
     is_approved: Optional[bool] = None
+    is_paid: Optional[bool] = None
 
    
 class SubTaskcreate(BaseModel):
@@ -34,3 +35,4 @@ class SubTaskcreate(BaseModel):
     description: str
     deadline: str
     assigned_to: str
+    status: str="open"

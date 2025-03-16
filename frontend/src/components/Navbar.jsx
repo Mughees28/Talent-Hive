@@ -13,8 +13,9 @@ const Navbar = () => {
 
   const [payment, setPayment] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  
   useEffect(() => {
+    console.log("User Data in Navbar:", user);
     const fetchPayment = async () => {
       if (!user) return;
 
@@ -52,18 +53,22 @@ const Navbar = () => {
         {user ? (
           <>
             <span className="earnings">
-              {user.role === "client" ? `Spent: ${payment}` : `Earnings: ${payment}`}
+              {user.role === "client" ? `Spent: ${payment}` : `Earnings: $${payment}`}
             </span>
+            {user.role === "agency_owner" && (
+              <Link to="/manage-agency" className="manage-agency-btn">Manage Agency</Link>
+            )}
 
             <div
               className="profile-dropdown"
               onMouseEnter={() => setDropdownOpen(true)}
               onMouseLeave={() => setDropdownOpen(false)}
             >
-              <button className="profile-btn">{user.name} 🔽</button>
+              <button className="profile-btn">{user.role==="agency_owner" ? user.agency_name : user.name} 🔽</button>
+              
               {dropdownOpen && (
                 <div className="dropdown-content">
-                  <Link to="/profile">Profile</Link>
+                 <Link to={`/profile/${user.id}`} className="profile-name">Profile</Link>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}

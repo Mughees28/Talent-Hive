@@ -65,7 +65,7 @@ async def create_sub_Task(task :SubTaskcreate ,current_user: dict = Depends(get_
 
     return {"message": "sub-Task added successfully"}
 
-@router.get("/completedsubtask")
+@router.get("/getsubtask")
 async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
     
     
@@ -73,13 +73,15 @@ async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Not Authenticated to get completed subtask")
     if current_user["role"] == "agency_owner":
         tasks = list(tasks_collection.find({
-            "status": "assigned",
-            "client_id": current_user["_id"]
+            # "status": "assigned",
+            "agency_id": current_user["_id"],
+            "category": "subtask"
         }))
     else:
         tasks = list(tasks_collection.find({
             "status": "assigned",
-            "assigned_to": current_user["_id"]
+            "assigned_to": current_user["_id"],
+            "category": "subtask"
         }))
 
     if not tasks:
@@ -87,8 +89,10 @@ async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
     
     for task in tasks:
         task["_id"] = str(task["_id"])
-        task["client_id"] = str(task["client_id"])
-        task["assigned_to"] = str(task["assigned_to"])
+        task["agency_id"] = str(task["agency_id"])
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
+
 
     return {"tasks": tasks}
 
@@ -101,13 +105,14 @@ async def get_available_task(current_user: dict = Depends(get_current_user)):
             "status": "open"
         }))
    
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No Assigned tasks found")
+    
     
     for task in tasks:
         task["_id"] = str(task["_id"])
         task["client_id"] = str(task["client_id"])
-        task["assigned_to"] = str(task["assigned_to"])
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
+
 
     return {"tasks": tasks}
 
@@ -122,19 +127,28 @@ async def get_assigned_task(current_user: dict = Depends(get_current_user)):
     else:
         tasks = list(tasks_collection.find({
             "status": "assigned",
-            "assigned_to": current_user["_id"]
+            "assigned_to": str(current_user["_id"]),
+            
         }))
 
     total_assigned = len(tasks)
-    
+    print("in assigned")
+    print(total_assigned)
 
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No Assigned tasks found")
+    # if not tasks:
+    #     raise HTTPException(status_code=404, detail="No Assigned tasks found")
     
     for task in tasks:
         task["_id"] = str(task["_id"])
-        task["client_id"] = str(task["client_id"])
-        task["assigned_to"] = str(task["assigned_to"])
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
+
+        if current_user["role"] == "agency_freelancer":
+             task["agency_id"] = str(task["agency_id"])
+        elif current_user["role"] in ["agency_owner","freelancer"] :
+            task["client_id"] = str(task["client_id"])
+    
+       
 
     return {"tasks": tasks,"total_assigned":total_assigned}
 
@@ -169,17 +183,26 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
     else:
         tasks = list(tasks_collection.find({
             "status": "completed",
-            "assigned_to": current_user["_id"]
+            "assigned_to": str(current_user["_id"])
         }))
     total_completed = len(tasks)
+    print(total_completed)
 
     # if not tasks:
     #     raise HTTPException(status_code=404, detail="No completed tasks found")
     
     for task in tasks:
         task["_id"] = str(task["_id"])
-        task["client_id"] = str(task["client_id"])
-        task["assigned_to"] = str(task["assigned_to"])
+       
+
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
+
+        if current_user["role"] == "agency_freelancer":
+             task["agency_id"] = str(task["agency_id"])
+        elif current_user["role"] in ["agency_owner","freelancer","client"] :
+            task["client_id"] = str(task["client_id"])
+
 
     return {"tasks": tasks,"total_completed":total_completed}
 
@@ -190,7 +213,11 @@ async def get_task(task_id: str, current_user: dict = Depends(get_current_user))
         raise HTTPException(status_code=404, detail="Task not found")
     
     task["_id"] = str(task["_id"])  
-    task["client_id"] = str(task["client_id"])
+
+    if current_user["role"] == "agency_freelancer":
+             task["agency_id"] = str(task["agency_id"])
+    elif current_user["role"] in ["agency_owner","freelancer","client"] :
+            task["client_id"] = str(task["client_id"])
 
     return task
 
@@ -217,8 +244,13 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
  
     task = tasks_collection.find_one({"_id": ObjectId(task_id)})
 
-    if task["client_id"] != current_user["_id"]:
+    if current_user["role"] in ["agency_freelancer","agency_owner","freelancer"] and task["assigned_to"] != str(current_user["_id"]):
         raise HTTPException(status_code=403, detail="Unauthorized to update this task")
+    
+    elif current_user["role"] == "client" and task["client_id"] != str(current_user["_id"]):
+       
+           raise HTTPException(status_code=403, detail="Unauthorized to update this task")
+   
 
     
     if not task:
@@ -233,7 +265,7 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
     return {"message": "Task updated successfully"}
 
 
-@router.put("/approve/{task_id}")
+@router.put("/{task_id}/approve")
 async def approve_task(task_id: str, current_user: dict = Depends(get_current_user)):
     
     task = tasks_collection.find_one({"_id": ObjectId(task_id)})

@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #28a745; /* Green background */
   color: white;
 }
 
@@ -20,14 +20,15 @@
   gap: 15px;
 }
 
+/* Earnings Display */
 .earnings {
   font-size: 1rem;
   font-weight: bold;
 }
 
+/* Profile Dropdown */
 .profile-dropdown {
   position: relative;
-  display: inline-block;
 }
 
 .profile-btn {
@@ -37,6 +38,9 @@
   font-size: 1rem;
   cursor: pointer;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .profile-btn:hover {
@@ -44,14 +48,20 @@
 }
 
 .dropdown-content {
+  display: none;
   position: absolute;
   right: 0;
   background: white;
   color: black;
-  min-width: 120px;
+  min-width: 150px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   overflow: hidden;
+  z-index: 10;
+}
+
+.profile-dropdown:hover .dropdown-content {
+  display: block;
 }
 
 .dropdown-content a,
@@ -73,23 +83,29 @@
   background: #e0e0e0;
 }
 
+/* Login Button */
 .login-btn {
   background: none;
-  border: none;
+  border: 1px solid white;
   color: white;
   font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .login-btn:hover {
-  opacity: 0.8;
+  background-color: white;
+  color: #28a745;
 }
+
+/* Post Task Button */
 .post-task-btn {
-  margin-right: 15px;
   padding: 8px 12px;
-  background-color: #28a745;
+  background-color: #218838;
   color: white;
   border-radius: 5px;
   text-decoration: none;
@@ -97,5 +113,19 @@
 }
 
 .post-task-btn:hover {
-  background-color: #218838;
+  background-color: #1e7e34;
+}
+
+/* Manage Agency Button */
+.manage-agency-btn {
+  padding: 8px 12px;
+  background-color: #155724;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.manage-agency-btn:hover {
+  background-color: #1b5e20;
 }

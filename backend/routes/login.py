@@ -25,13 +25,13 @@ async def login(user: Userlogin):
     
 
     access_token = create_access_token(data={"sub": user.email})
-
-    return {"token": access_token, "token_type": "bearer",
-            "user": {
-            "id": str(db_user["_id"]),
+    user_data= {"id": str(db_user["_id"]),
             "name": db_user["name"],
             "email": db_user["email"],
-            "role": db_user["role"]
-        }}
+            "role": db_user["role"]}
+    if db_user["role"] == "agency_owner":
+        user_data["agency_name"]=db_user["agency_name"]
+    return {"token": access_token, "token_type": "bearer",
+            "user":user_data}
 
 

@@ -1,12 +1,9 @@
-import React from "react";
-import "../styles/Dashboard.css";
-
-const TaskStats = ({ stats }) => {
+const TaskStats = ({ stats = { assigned: 0, completed: 0, posted: 0 } }) => {
   return (
     <div className="task-stats">
       <div className="stat-box">Assigned: {stats.assigned}</div>
       <div className="stat-box">Completed: {stats.completed}</div>
-      <div className="stat-box">In Progress: {stats.posted}</div>
+      <div className="stat-box">Posted: {stats.posted}</div>
     </div>
   );
 };

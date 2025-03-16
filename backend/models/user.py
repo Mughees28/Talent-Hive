@@ -21,3 +21,4 @@ class AddFreelancer(BaseModel):
     email: EmailStr
     password: str
     skill: str
+    role: str= "agency_freelancer"

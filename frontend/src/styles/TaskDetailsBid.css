@@ -1,0 +1,116 @@
+.task-details-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Task Details Section */
+.task-details-bid {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 60%;
+}
+
+h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Bidding Section */
+.bid-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bid-btn, .complete-btn, .payment-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.bid-btn:hover, .complete-btn:hover, .payment-btn:hover {
+    background: #218838;
+}
+
+.bid-btn:disabled, .complete-btn:disabled, .payment-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Subtasks Section */
+.subtasks-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 35%;
+}
+
+.subtasks-container h3 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.subtasks-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.subtasks-container li {
+    background-color: #f1f8e9;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #333;
+}
+
+.completed-task {
+    background-color: #d4edda !important;
+    color: #155724;
+    font-weight: bold;
+}
+
+/* Waiting for Approval Message */
+.waiting-approval {
+    color: #d39e00;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Payment Button */
+.payment-btn {
+    background: #007bff;
+    margin-top: 10px;
+}
+
+.payment-btn:hover {
+    background: #0056b3;
+}

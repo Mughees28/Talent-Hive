@@ -41,6 +41,7 @@ async def get_user(user_id: str, current_user: dict = Depends(get_current_user))
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    print(user["agency_name"])
 
     user["_id"] = str(user["_id"])  
     return user

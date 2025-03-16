@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException,Depends
 from pydantic import BaseModel, EmailStr
 from models.bid import BidCreate 
-from database import tasks_collection,bids_collection
+from database import tasks_collection,bids_collection,users_collection
 from oauth2 import get_current_user
 from bson import ObjectId
 
@@ -10,7 +10,7 @@ router =APIRouter(prefix="/bids")
 
 @router.post("/")
 async def place_bid(bid: BidCreate, current_user: dict = Depends(get_current_user)):
-    if current_user["role"] not in ["freelancer","agency"]:
+    if current_user["role"] not in ["freelancer","agency_owner"]:
         raise HTTPException(status_code=403, detail="Only freelancers and agency owners can place bids")
 
     task = tasks_collection.find_one({"_id": ObjectId(bid.task_id)})
@@ -20,6 +20,9 @@ async def place_bid(bid: BidCreate, current_user: dict = Depends(get_current_use
     bid_dict = bid.dict()
     bid_dict["bidder_id"] = ObjectId(current_user["_id"])  
     bid_dict["task_id"] = ObjectId(bid.task_id)
+  
+    bid_dict["name"] = current_user["name"]
+
 
     inserted_bid = bids_collection.insert_one(bid_dict) 
     response_bid = bid_dict.copy()
@@ -52,6 +55,7 @@ async def get_bids_by_task(task_id: str, current_user: dict = Depends(get_curren
         bid["_id"] = str(bid["_id"])
         bid["bidder_id"] = str(bid["bidder_id"])
         bid["task_id"] = str(bid["task_id"])
+    
     
     return bids
 

@@ -1,0 +1,31 @@
+.profile-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-container h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  .profile-container p {
+    margin: 5px 0;
+  }
+  
+  .reviews-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .review-item {
+    background: #f8f9fa;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #36A2EB;
+  }
+  
