@@ -145,7 +145,7 @@ async def get_assigned_task(current_user: dict = Depends(get_current_user)):
 
         if current_user["role"] == "agency_freelancer":
              task["agency_id"] = str(task["agency_id"])
-        elif current_user["role"] in ["agency_owner","freelancer"] :
+        elif current_user["role"] in ["agency_owner","freelancer","client"] :
             task["client_id"] = str(task["client_id"])
     
        
@@ -180,6 +180,8 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
             "status": "completed",
             "client_id": current_user["_id"]
         }))
+
+    
     else:
         tasks = list(tasks_collection.find({
             "status": "completed",
@@ -205,6 +207,8 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
 
 
     return {"tasks": tasks,"total_completed":total_completed}
+
+
 
 @router.get("/{task_id}")
 async def get_task(task_id: str, current_user: dict = Depends(get_current_user)):
@@ -247,7 +251,7 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
     if current_user["role"] in ["agency_freelancer","agency_owner","freelancer"] and task["assigned_to"] != str(current_user["_id"]):
         raise HTTPException(status_code=403, detail="Unauthorized to update this task")
     
-    elif current_user["role"] == "client" and task["client_id"] != str(current_user["_id"]):
+    elif current_user["role"] == "client" and task["client_id"] != current_user["_id"]:
        
            raise HTTPException(status_code=403, detail="Unauthorized to update this task")
    

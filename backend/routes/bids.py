@@ -50,7 +50,7 @@ async def get_bid(bid_id: str, current_user: dict = Depends(get_current_user)):
 async def get_bids_by_task(task_id: str, current_user: dict = Depends(get_current_user)):
     bids = list(bids_collection.find({"task_id": ObjectId(task_id)}))
     
-    # Convert ObjectIds to strings for response
+ 
     for bid in bids:
         bid["_id"] = str(bid["_id"])
         bid["bidder_id"] = str(bid["bidder_id"])

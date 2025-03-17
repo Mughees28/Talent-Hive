@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import API from "../api";
-import "../styles/Signup.css"; // Import CSS
+import "../styles/Signup.css";
 import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
@@ -10,7 +10,7 @@ const Signup = () => {
     email: "",
     password: "",
     role: "client",
-    agency_name: "", // Add agency_name field
+    agency_name: "", 
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +29,7 @@ const Signup = () => {
       
     } catch (error) {
       alert(error.response.data.detail);
-      // alert("Signup failed. Try again.",error);
+
     }
     finally{
       setIsLoading(false);
@@ -50,7 +50,7 @@ const Signup = () => {
           <option value="agency_owner">Agency Owner</option>
         </select>
 
-        {/* Conditionally Show Agency Name Input */}
+     
         {userData.role === "agency_owner" && (
           <input
             type="text"

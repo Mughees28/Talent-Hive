@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/authslice";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
-import "../styles/Login.css"; // Import custom styles
+import "../styles/Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");

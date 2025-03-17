@@ -46,8 +46,8 @@ const ReviewPayment = () => {
     try {
       await API.post("/payments", {
         task_id: taskId,
-        receiver_id: task.assigned_to, // Using assigned_to instead of bid data
-        total_amount: task.selectedbid_amount, // Fetching from task itself
+        receiver_id: task.assigned_to, 
+        total_amount: task.selectedbid_amount, 
         status: "paid",
       });
       alert("Payment successful!");
@@ -86,7 +86,7 @@ const ReviewPayment = () => {
     <div className="review-payment-container">
       <h2>Review & Payment</h2>
 
-      {/* Task Details */}
+    
       <div className="task-details">
         <h3>{task.title}</h3>
         <p><strong>Description:</strong> {task.description}</p>
@@ -95,7 +95,7 @@ const ReviewPayment = () => {
         <p><strong>Status:</strong> {task.status}</p>
       </div>
 
-      {/* Submitted Work */}
+    
       <div className="submitted-work">
         <h3>Work Submitted</h3>
         <p>
@@ -103,24 +103,24 @@ const ReviewPayment = () => {
         </p>
       </div>
 
-      {/* Approval Section */}
+     
       {!isApproved ? (
         <div className="approval-section">
           <button onClick={handleApprove} className="approve-btn">Approve & Pay</button>
         </div>
       ) : (
         <>
-          {/* Payment Section */}
+          
           {!isPaid ? (
             <div className="payment-section">
-              <p><strong>Amount to Pay:</strong> ${task.selectedbid_amount}</p>
+              {/* <p><strong>Amount to Pay:</strong> ${task.selectedbid_amount}</p> */}
               <button onClick={handlePayment} className="payment-btn">Pay ${task.selectedbid_amount}</button>
             </div>
           ) : (
             <>
               <p className="paid-message">Payment completed successfully!</p>
 
-              {/* Review Section */}
+            
               <div className="review-section">
                 <h3>Leave a Review</h3>
                 <label>Rating:</label>

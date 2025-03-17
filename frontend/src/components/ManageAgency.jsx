@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../api";
 import "../styles/ManageAgency.css";
 
@@ -7,10 +8,16 @@ const ManageAgency = () => {
   const [agencyFreelancers, setAgencyFreelancers] = useState([]);
   const [newFreelancer, setNewFreelancer] = useState({ name: "", email: "", skill: "", password: "" });
 
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [subtasks, setSubtasks] = useState([]);
+  const [isPaid, setIsPaid] = useState({});
+
   useEffect(() => {
     fetchFreelancers();
+    fetchCompletedTasks();
   }, []);
 
+ 
   const fetchFreelancers = async () => {
     try {
       const response = await API.get("/users/get-freelancer");
@@ -20,6 +27,53 @@ const ManageAgency = () => {
     }
   };
 
+  
+  const fetchCompletedTasks = async () => {
+    try {
+      const response = await API.get("/tasks/completed");
+      const tasks = response.data.tasks.filter(task => task.agency_id === storedUser._id);
+      setCompletedTasks(tasks);
+
+     
+      fetchSubtasks(tasks);
+    } catch (error) {
+      console.error("Error fetching completed tasks:", error);
+    }
+  };
+
+  
+  const fetchSubtasks = async (tasks) => {
+    try {
+      const subtaskResponse = await API.get("/tasks/getsubtask");
+      const relatedSubtasks = subtaskResponse.data.tasks.filter(subtask =>
+        tasks.some(task => task._id === subtask.parent_task_id)
+      );
+
+      setSubtasks(relatedSubtasks);
+
+      
+      checkPaymentStatus(tasks);
+    } catch (error) {
+      console.error("Error fetching subtasks:", error);
+    }
+  };
+
+  
+  const checkPaymentStatus = async (tasks) => {
+    const paymentStatus = {};
+    for (let task of tasks) {
+      try {
+        const paymentResponse = await API.get(`/payments/task/${task._id}`);
+        paymentStatus[task._id] = paymentResponse.data.status === "paid";
+      } catch (error) {
+        console.error("Error checking payment status:", error);
+        paymentStatus[task._id] = false; 
+      }
+    }
+    setIsPaid(paymentStatus);
+  };
+
+  
   const handleAddFreelancer = async (e) => {
     e.preventDefault();
     try {
@@ -35,6 +89,7 @@ const ManageAgency = () => {
     }
   };
 
+ 
   const handleRemoveFreelancer = async (freelancerId) => {
     try {
       await API.delete(`/users/deletefreelancer/${freelancerId}`);
@@ -47,7 +102,9 @@ const ManageAgency = () => {
 
   return (
     <div className="manage-agency">
-      {/* Add Freelancer Form */}
+      <h2>Manage Agency</h2>
+
+      
       <div className="add-freelancer">
         <h3>Add Freelancer</h3>
         <form onSubmit={handleAddFreelancer}>
@@ -83,7 +140,7 @@ const ManageAgency = () => {
         </form>
       </div>
 
-      {/* List of Freelancers */}
+    
       <div className="freelancer-list">
         <h3>Current Agency Freelancers</h3>
         <ul>
@@ -98,6 +155,29 @@ const ManageAgency = () => {
             ))
           ) : (
             <p>No freelancers added yet.</p>
+          )}
+        </ul>
+      </div>
+
+  
+      <div className="completed-tasks">
+        <h3>Completed Tasks</h3>
+        <ul>
+          {completedTasks.length > 0 ? (
+            completedTasks.map((task) => (
+              <li key={task._id}>
+                {task.title} - {task.status}
+                {!isPaid[task._id] ? (
+                  <Link to={`/payment-review/${task._id}`} className="pay-btn">
+                    Pay Freelancers
+                  </Link>
+                ) : (
+                  <span className="paid-status">Paid</span>
+                )}
+              </li>
+            ))
+          ) : (
+            <p>No completed tasks</p>
           )}
         </ul>
       </div>

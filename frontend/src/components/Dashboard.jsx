@@ -10,7 +10,7 @@ const Dashboard = () => {
   const reduxUser = useSelector((state) => state.auth.user);
   const [user, setUser] = useState(reduxUser || storedUser);
 
-  // State initialization
+
   const [taskStats, setTaskStats] = useState({ assigned: 0, completed: 0, posted: 0 });
   const [availableTasks, setAvailableTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
@@ -60,7 +60,6 @@ const Dashboard = () => {
         <h2>Dashboard</h2>
         {user && <TaskStats stats={taskStats} />}
 
-        {/* For Clients: Posted Tasks */}
         {user?.role === "client" && (
           <div className="task-section">
             <h3>Posted Tasks</h3>
@@ -72,11 +71,11 @@ const Dashboard = () => {
                       {task.title}
                     </Link> - {task.status}
 
-                    {/* Approve & Pay Button */}
+                  
                     {task.status === "completed"  && (
                       <Link to={`/task/${task._id}/payment-review`}>
                         <button className="approve-btn" disabled={task.is_approved && task.is_paid}>
-                          {task.is_approved ? "Approved & Paid" : "Approve & Pay"}
+                          {task.is_approved && task.is_paid? "Approved & Paid" : "Approve & Pay"}
                         </button>
                       </Link>
                     )}
@@ -89,10 +88,9 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* For Freelancers & Agency Owners */}
         {(user.role === "freelancer" || user.role === "agency_owner") && (
           <div className="task-container">
-            {/* Available Tasks */}
+          
             <div className="task-section">
               <h3>Available Tasks</h3>
               <ul>
@@ -110,7 +108,7 @@ const Dashboard = () => {
               </ul>
             </div>
 
-            {/* Assigned Tasks */}
+            
             <div className="task-section">
               <h3>Assigned Tasks</h3>
               <ul>
@@ -121,7 +119,7 @@ const Dashboard = () => {
                         {task.title}
                       </Link> - {task.status}
 
-                      {/* Show "Breakdown Task" button for agency owners */}
+                     
                       {user.role === "agency_owner" && (
                         <Link to={`/task/${task._id}/taskbreakdown`} className="breakdown-btn">
                           Breakdown Task
@@ -137,7 +135,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* For Agency Freelancers: Assigned Tasks Only */}
         {user.role === "agency_freelancer" && (
           <div className="task-container">
             <div className="task-section">
@@ -160,7 +157,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Notifications Sidebar */}
+  
       <div className="dashboard-right">
         <h3>Notifications</h3>
         <ul>

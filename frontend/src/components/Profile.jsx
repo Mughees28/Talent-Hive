@@ -4,7 +4,7 @@ import API from "../api";
 import "../styles/Profile.css";
 
 const Profile = () => {
-  const { userId } = useParams(); // Get user_id from URL
+  const { userId } = useParams(); 
   const [user, setUser] = useState(null);
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);

@@ -95,7 +95,7 @@ async def get_user_profile(user_id: str, current_user: dict = Depends(get_curren
     user["_id"] = str(user["_id"])
 
   
-    reviews = list(reviews_collection.find({"reviewee_id": ObjectId(user_id)}))
+    reviews = list(reviews_collection.find({"reviewee_id": user_id}))
     
     
     for review in reviews:

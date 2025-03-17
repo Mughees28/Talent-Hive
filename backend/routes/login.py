@@ -6,7 +6,7 @@ from database import users_collection
 from config import  verify_password
 from models.user import Userlogin
 from database import users_collection
-# from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
 
 
 router = APIRouter()

@@ -6,7 +6,7 @@ import "../styles/TaskDetailsBid.css";
 import "../styles/Profile.css";
 
 const TaskDetailsBid = () => {
-  const { taskId } = useParams(); // Get Task ID from URL
+  const { taskId } = useParams(); 
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const reduxUser = useSelector((state) => state.auth.user);
@@ -15,8 +15,8 @@ const TaskDetailsBid = () => {
   const [task, setTask] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [hasBid, setHasBid] = useState(false);
-  const [subtasks, setSubtasks] = useState([]); // Holds subtasks
-  const [allSubtasksCompleted, setAllSubtasksCompleted] = useState(false); // Track if all subtasks are completed
+  const [subtasks, setSubtasks] = useState([]); 
+  const [allSubtasksCompleted, setAllSubtasksCompleted] = useState(false);
   const [isApproved, setIsApproved] = useState(false); 
   const [waitingForApproval, setWaitingForApproval] = useState(false);
 
@@ -30,18 +30,17 @@ const TaskDetailsBid = () => {
 
         console.log(taskResponse.data.status)
 
-        // Fetch subtasks only if user is agency_owner
         if (user.role === "agency_owner") {
           const subtaskResponse = await API.get(`/tasks/getsubtask`);
           setSubtasks(subtaskResponse.data.tasks || []);
           
           
-          // Check if all subtasks are marked "completed"
+         
           const areAllSubtasksCompleted = subtaskResponse.data.tasks.every(subtask => subtask.status === "completed");
           setAllSubtasksCompleted(areAllSubtasksCompleted);
         }
 
-        // Check if user has already placed a bid
+  
         const bidsResponse = await API.get(`/bids/task/${taskId}`);
         const existingBid = bidsResponse.data.find((bid) => bid.bidder_id === user.id);
         if (existingBid) {
@@ -85,9 +84,9 @@ const TaskDetailsBid = () => {
       const updatedTask = await API.get(`/tasks/${taskId}`);
       setTask(updatedTask.data);
   
-      // Update approval state
+   
       setWaitingForApproval(true);
-      setIsApproved(updatedTask.data.is_approved); // Ensure UI updates
+      setIsApproved(updatedTask.data.is_approved); 
     } catch (error) {
       console.error("Error marking task complete:", error);
       alert("Failed to mark task as complete.");
@@ -98,13 +97,13 @@ const TaskDetailsBid = () => {
 
   return (
     <div className="task-details-container">
-      {/* Left Section: Task Details */}
+  
       <div className="task-details-bid">
         { user.role == "agency_freelancer" ?  "" :<Link to={`/profile/${task.client_id}`} className="profile-link">Client Profile</Link>}
         <h2>{task.title}</h2>
         <p><strong>Description:</strong> {task.description}</p>
         <p><strong>Deadline:</strong> {task.deadline}</p>
-        {/* <p><strong>Budget:</strong> ${task.budget}</p> */}
+        {user.role =="agency_freelancer" ? "" : <p><strong>Budget:</strong> {task.budget}</p>  }
         <p><strong>Status:</strong> {task.status}</p>
 
         {task.status === "open" && !hasBid && (user.role === "freelancer" || user.role === "agency_owner") && (
@@ -150,13 +149,16 @@ const TaskDetailsBid = () => {
         )}
         {user.role === "freelancer"  && (
           <>
+          {task.status ==="assigned" && (
             <button
-              onClick={handleMarkComplete}
-              className="complete-btn"
-              disabled={!allSubtasksCompleted || task.status === "completed"}
-            >
-              {task.status === "completed" ? "Task Completed" : "Mark Task as Complete"}
-            </button>
+            onClick={handleMarkComplete}
+            className="complete-btn"
+            disabled={task.status === "completed"}
+          >
+            {task.status === "completed" ? "Task Completed" : "Mark Task as Complete"}
+          </button>
+          ) }
+            
             {waitingForApproval && (
               <p className="approval-message">
                 Waiting for client approval and payment...
@@ -174,11 +176,11 @@ const TaskDetailsBid = () => {
             Mark Task as Complete
           </button>
         )}
-        {/* Waiting for Approval Message */}
+      
         
       </div>
 
-      {/* Right Section: Subtasks (Only for Agency Owners) */}
+      
       {user.role === "agency_owner" && (
         <div className="subtasks-container">
           <h3>Subtasks</h3>

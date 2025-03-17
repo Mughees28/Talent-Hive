@@ -4,7 +4,7 @@ import API from "../api";
 import "../styles/TaskBreakdown.css";
 
 const TaskBreakdown = () => {
-  const { taskId } = useParams(); // Get Task ID from URL
+  const { taskId } = useParams(); 
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   
@@ -53,7 +53,7 @@ const TaskBreakdown = () => {
 
       alert("Subtask created successfully!");
       setNewSubtask({ description: "", deadline: "" });
-      fetchTaskDetails(); // Refresh task subtasks
+      fetchTaskDetails(); 
     } catch (error) {
       console.error("Error creating subtask:", error);
       alert("Failed to create subtask.");

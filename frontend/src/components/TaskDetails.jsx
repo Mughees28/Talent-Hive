@@ -6,12 +6,12 @@ import { Link } from "react-router-dom";
 import "../styles/Profile.css";
 
 const TaskDetails = () => {
-  const { taskId } = useParams(); // Get task ID from URL
+  const { taskId } = useParams(); 
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
   const [bids, setBids] = useState([]);
   const [selectedBid, setSelectedBid] = useState("");
-  const [amount, setSelectedBidAmount] = useState("");
+  const [amount, setSelectedBidAmount] = useState(0);
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
@@ -70,6 +70,7 @@ const TaskDetails = () => {
               <input
                 type="radio"
                 name="selectedBid"
+                disabled={selectedBid || task.is_paid}
                 value={bid.bidder_id}
                 onChange={() =>{ setSelectedBid(bid.bidder_id);
                                 setSelectedBidAmount(bid.amount)
@@ -86,6 +87,7 @@ const TaskDetails = () => {
       <button onClick={handleAssignTask} disabled={!selectedBid} className="assign-btn">
         Assign Task
       </button>
+      {/* {!selectedBid ? "Task in progress... head back to dashboard" : " " } */}
     </div>
   );
 };

@@ -28,12 +28,12 @@ def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         
-        # Extract expiration time
+      
         exp = payload.get("exp")
         if exp is None:
             raise credentials_exception
         
-        # Convert to datetime and check expiry
+       
         if datetime.fromtimestamp(exp) < datetime.now():
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
         
