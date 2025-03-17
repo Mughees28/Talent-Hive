@@ -103,7 +103,7 @@ const TaskDetailsBid = () => {
         <h2>{task.title}</h2>
         <p><strong>Description:</strong> {task.description}</p>
         <p><strong>Deadline:</strong> {task.deadline}</p>
-        {user.role =="agency_freelancer" ? "" : <p><strong>Budget:</strong> {task.budget}</p>  }
+        {user.role =="agency_freelancer" ? "" : <p><strong>Budget:</strong> ${task.budget}</p>  }
         <p><strong>Status:</strong> {task.status}</p>
 
         {task.status === "open" && !hasBid && (user.role === "freelancer" || user.role === "agency_owner") && (
@@ -128,13 +128,14 @@ const TaskDetailsBid = () => {
         )} */}
         {user.role === "agency_owner"  && (
           <>
-            <button
+            {task.status === "assigned"  && ( <button
               onClick={handleMarkComplete}
               className="complete-btn"
               disabled={!allSubtasksCompleted || task.status === "completed"}
             >
-              {task.status === "completed" ? "Task Completed" : "Mark Task as Complete"}
-            </button>
+              {task.status === "completed"  ? "Task Completed" : "Mark Task as Complete"}
+            </button>)}
+            
             {waitingForApproval && (
               <p className="approval-message">
                 Waiting for client approval and payment...
@@ -181,7 +182,7 @@ const TaskDetailsBid = () => {
       </div>
 
       
-      {user.role === "agency_owner" && (
+      {user.role === "agency_owner" && task.status === "assigned" && (
         <div className="subtasks-container">
           <h3>Subtasks</h3>
           <ul>

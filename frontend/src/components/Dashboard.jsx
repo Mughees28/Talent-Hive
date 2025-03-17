@@ -10,7 +10,6 @@ const Dashboard = () => {
   const reduxUser = useSelector((state) => state.auth.user);
   const [user, setUser] = useState(reduxUser || storedUser);
 
-
   const [taskStats, setTaskStats] = useState({ assigned: 0, completed: 0, posted: 0 });
   const [availableTasks, setAvailableTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
@@ -22,7 +21,7 @@ const Dashboard = () => {
 
     const fetchDashboardData = async () => {
       try {
-        let availableResponse, assignedResponse, postedResponse, completedResponse;
+        let availableResponse, assignedResponse, postedResponse, completedResponse, notificationsResponse;
 
         if (user.role === "freelancer" || user.role === "agency_owner") {
           availableResponse = await API.get("/tasks/available");
@@ -37,9 +36,13 @@ const Dashboard = () => {
           assignedResponse = await API.get("/tasks/assigned");
         }
 
+        // Fetch notifications
+        notificationsResponse = await API.get(`/notifications/${user.id}`);
+
         setAvailableTasks(availableResponse?.data?.tasks || []);
         setAssignedTasks(assignedResponse?.data?.tasks || []);
         setPostedTasks(postedResponse?.data?.tasks || []);
+        setNotifications(notificationsResponse?.data?.notifications || []);
         setTaskStats({
           completed: completedResponse?.data?.total_completed || 0,
           assigned: assignedResponse?.data?.total_assigned || 0,
@@ -53,6 +56,16 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [user]);
+
+  // Clear notifications function
+  const handleClearNotifications = async () => {
+    try {
+      await API.delete(`/notifications/${user.id}/clear`);
+      setNotifications([]); // Clear UI notifications
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -71,11 +84,10 @@ const Dashboard = () => {
                       {task.title}
                     </Link> - {task.status}
 
-                  
                     {task.status === "completed"  && (
                       <Link to={`/task/${task._id}/payment-review`}>
                         <button className="approve-btn" disabled={task.is_approved && task.is_paid}>
-                          {task.is_approved && task.is_paid? "Approved & Paid" : "Approve & Pay"}
+                          {task.is_approved && task.is_paid ? "Approved & Paid" : "Approve & Pay"}
                         </button>
                       </Link>
                     )}
@@ -90,7 +102,6 @@ const Dashboard = () => {
 
         {(user.role === "freelancer" || user.role === "agency_owner") && (
           <div className="task-container">
-          
             <div className="task-section">
               <h3>Available Tasks</h3>
               <ul>
@@ -108,7 +119,6 @@ const Dashboard = () => {
               </ul>
             </div>
 
-            
             <div className="task-section">
               <h3>Assigned Tasks</h3>
               <ul>
@@ -119,7 +129,6 @@ const Dashboard = () => {
                         {task.title}
                       </Link> - {task.status}
 
-                     
                       {user.role === "agency_owner" && (
                         <Link to={`/task/${task._id}/taskbreakdown`} className="breakdown-btn">
                           Breakdown Task
@@ -144,7 +153,7 @@ const Dashboard = () => {
                   assignedTasks.map((task) => (
                     <li key={task._id}>
                       <Link to={`/task/${task._id}/bid`} className="task-link">
-                        {task.title}
+                        Go to task
                       </Link> - {task.status}
                     </li>
                   ))
@@ -157,12 +166,17 @@ const Dashboard = () => {
         )}
       </div>
 
-  
+      {/* Notifications Sidebar */}
       <div className="dashboard-right">
         <h3>Notifications</h3>
+        <button onClick={handleClearNotifications} className="clear-btn">
+          Clear All
+        </button>
         <ul>
           {notifications.length > 0 ? (
-            notifications.map((notif) => <li key={notif.id}>{notif.message}</li>)
+            notifications.map((notif, index) => (
+              <li key={index}>{notif.message}</li>
+            ))
           ) : (
             <p>No new notifications</p>
           )}

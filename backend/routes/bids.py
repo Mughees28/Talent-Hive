@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException,Depends
 from pydantic import BaseModel, EmailStr
 from models.bid import BidCreate 
-from database import tasks_collection,bids_collection,users_collection
+from database import tasks_collection,bids_collection,users_collection,notifications_collection
 from oauth2 import get_current_user
 from bson import ObjectId
 
@@ -29,6 +29,11 @@ async def place_bid(bid: BidCreate, current_user: dict = Depends(get_current_use
     response_bid["_id"] = str(inserted_bid.inserted_id)
     response_bid["bidder_id"] = str(response_bid["bidder_id"])
     response_bid["task_id"] = str(response_bid["task_id"])
+    notification = {
+        "user_id": task["client_id"],
+        "message": f"A new bid has been placed on your task: {task['title']}."
+    }
+    notifications_collection.insert_one(notification)
 
     return {"message": "Bid placed successfully","bid":response_bid}
 

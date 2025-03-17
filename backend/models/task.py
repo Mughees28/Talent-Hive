@@ -23,4 +23,5 @@ class SubTaskcreate(BaseModel):
     description: str
     deadline: str
     assigned_to: str
-    status: str="open"
+    status: str="assigned"
+    is_paid: Optional[bool] = None

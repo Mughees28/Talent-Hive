@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from database import db
-from routes import signup, login, tasks,bids, users, reviews, payments
+from routes import signup, login, tasks,bids, users, reviews, payments,notfications
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -14,6 +14,7 @@ app.include_router(bids.router)
 app.include_router(users.router)
 app.include_router(reviews.router)
 app.include_router(payments.router)
+app.include_router(notfications.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -48,7 +48,7 @@ const TaskBreakdown = () => {
       await API.post(`/tasks/addsubtask`, {
         ...newSubtask,
         assigned_to: selectedFreelancer,
-        task_id: taskId
+        task_id: taskId,
       });
 
       alert("Subtask created successfully!");

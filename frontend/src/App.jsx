@@ -12,6 +12,7 @@ import Profile from "./components/Profile.jsx";
 import ManageAgency from "./components/ManageAgency.jsx";
 import TaskBreakdown from "./components/TaskBreakdown.jsx";
 import ReviewPayment from "./components/ReviewPayment";
+import AgencyPayment from "./components/AgencyPayment";
 
 const ProtectedRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token) || localStorage.getItem("token");
@@ -44,6 +45,7 @@ function App() {
         <Route path="/manage-agency" element={<ProtectedRoute><ManageAgency /></ProtectedRoute>} />
         <Route path="/task/:taskId/taskbreakdown" element={<ProtectedRoute><TaskBreakdown /></ProtectedRoute>} />
         <Route path="/task/:taskId/payment-review" element={<ProtectedRoute><ReviewPayment /></ProtectedRoute>} />
+        <Route path="agency-payment/:taskId" element={<ProtectedRoute><AgencyPayment /></ProtectedRoute>} />
 
 
       </Routes>

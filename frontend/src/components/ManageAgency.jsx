@@ -168,9 +168,10 @@ const ManageAgency = () => {
               <li key={task._id}>
                 {task.title} - {task.status}
                 {!isPaid[task._id] ? (
-                  <Link to={`/payment-review/${task._id}`} className="pay-btn">
-                    Pay Freelancers
-                  </Link>
+                  <Link to={`/agency-payment/${task._id}`} className="pay-btn">
+                  Pay Freelancers & Receive Cut
+                </Link>
+                
                 ) : (
                   <span className="paid-status">Paid</span>
                 )}
