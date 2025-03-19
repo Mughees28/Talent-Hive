@@ -28,20 +28,11 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-             
-              <Dashboard />
-            </ProtectedRoute>
-          }
-          
-        />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}/>
         <Route path="/post-task" element={<ProtectedRoute><PostTask /></ProtectedRoute>} />
-        <Route path="/task/:taskId" element={<TaskDetails />} />
-        <Route path="/task/:taskId/bid" element={<TaskDetailsBid />} />
-        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/task/:taskId" element={<ProtectedRoute><TaskDetails /></ProtectedRoute>} />
+        <Route path="/task/:taskId/bid" element={<ProtectedRoute><TaskDetailsBid /></ProtectedRoute>} />
+        <Route path="/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/manage-agency" element={<ProtectedRoute><ManageAgency /></ProtectedRoute>} />
         <Route path="/task/:taskId/taskbreakdown" element={<ProtectedRoute><TaskBreakdown /></ProtectedRoute>} />
         <Route path="/task/:taskId/payment-review" element={<ProtectedRoute><ReviewPayment /></ProtectedRoute>} />

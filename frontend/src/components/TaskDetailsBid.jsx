@@ -36,7 +36,9 @@ const TaskDetailsBid = () => {
           
           
          
-          const areAllSubtasksCompleted = subtaskResponse.data.tasks.every(subtask => subtask.status === "completed");
+        const areAllSubtasksCompleted = subtaskResponse.data.tasks
+        .filter(subtask => subtask.task_id === taskId)  
+        .every(subtask => subtask.status === "completed");
           setAllSubtasksCompleted(areAllSubtasksCompleted);
         }
 
@@ -138,7 +140,7 @@ const TaskDetailsBid = () => {
             
             {waitingForApproval && (
               <p className="approval-message">
-                Waiting for client approval and payment...
+                Waiting for client approval and payment...Check back later ...
               </p>
             )}
             {isApproved && (
@@ -187,10 +189,11 @@ const TaskDetailsBid = () => {
           <h3>Subtasks</h3>
           <ul>
             {subtasks.length > 0 ? (
-              subtasks.map((subtask) => (
-                <li key={subtask.id} className={subtask.status === "completed" ? "completed-task" : ""}>
-                  {subtask.description} - <strong>{subtask.status}</strong>
-                </li>
+              subtasks.filter((subtask) => subtask.task_id === taskId).map((subtask) => (
+                 <li key={subtask.id} className={subtask.status === "completed" ? "completed-task" : ""}>
+                {subtask.title} -<strong>{subtask.status}</strong>
+              </li>
+                
               ))
             ) : (
               <p>No subtasks available.</p>

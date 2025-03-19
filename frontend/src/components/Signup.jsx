@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import API from "../api";
 import "../styles/Signup.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/authslice";
+
 
 const Signup = () => {
+
+ 
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [userData, setUserData] = useState({
     name: "",
@@ -23,15 +30,17 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const response = await API.post("/signup", userData);
-      
-      alert(response.data.message);
-      navigate("/login");
-      
-    } catch (error) {
-      alert(error.response.data.detail);
 
-    }
-    finally{
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      dispatch(loginSuccess(response.data));
+
+      alert("Signup successful!");
+      navigate("/dashboard");
+    } catch (error) {
+      alert("Signup failed. Check credentials.");
+    } finally {
       setIsLoading(false);
     }
   };

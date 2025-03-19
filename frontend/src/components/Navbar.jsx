@@ -53,7 +53,7 @@ const Navbar = () => {
         {user ? (
           <>
             <span className="earnings">
-              {user.role === "client" ? `Spent: ${payment}` : `Earnings: $${payment}`}
+              {user.role === "client" ? `Spent: $${payment}` : `Earnings: $${payment}`}
             </span>
             {user.role === "agency_owner" && (
               <Link to="/manage-agency" className="manage-agency-btn">Manage Agency</Link>

@@ -64,14 +64,49 @@ async def create_sub_Task(task :SubTaskcreate ,current_user: dict = Depends(get_
     tasks_collection.insert_one(subtask_dict)
     notifications_collection.insert_one({
         "user_id": task.assigned_to,
-        "message": f"You have been assigned a new subtask: {task.title}",
+        "message": f"You have been assigned a new subtask: ",
     
     })
 
     return {"message": "sub-Task added successfully"}
 
 @router.get("/getsubtask")
-async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
+async def get_subtask(task_id =str ,current_user: dict = Depends(get_current_user)):
+    
+    
+    if current_user["role"] != "agency_owner":
+        raise HTTPException(status_code=403, detail="Not Authenticated to get completed subtask")
+    if current_user["role"] == "agency_owner":
+        print("in agency_owner")
+        tasks = list(tasks_collection.find({
+            # "status": "assigned",
+            "agency_id": current_user["_id"],
+            "category": "subtask"
+            #  "task_id": task_id
+        }))
+    else:
+        tasks = list(tasks_collection.find({
+            "status": "assigned",
+            "assigned_to": current_user["_id"],
+            "category": "subtask"
+        }))
+
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No Assigned tasks found")
+    
+    for task in tasks:
+        task["_id"] = str(task["_id"])
+        task["agency_id"] = str(task["agency_id"])
+        if "assigned_to" in task and task["assigned_to"]:
+            task["assigned_to"] = str(task["assigned_to"])
+    print(tasks)
+
+
+    return {"tasks": tasks}
+
+
+@router.get("/getsubtask/{task_id}")
+async def get_subtask_by_id(task_id : str ,current_user: dict = Depends(get_current_user)):
     
     
     if current_user["role"] != "agency_owner":
@@ -80,7 +115,8 @@ async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
         tasks = list(tasks_collection.find({
             # "status": "assigned",
             "agency_id": current_user["_id"],
-            "category": "subtask"
+            "category": "subtask",
+            "task_id": task_id
         }))
     else:
         tasks = list(tasks_collection.find({
@@ -100,7 +136,6 @@ async def get_completed_subtask(current_user: dict = Depends(get_current_user)):
 
 
     return {"tasks": tasks}
-
 
 @router.get("/available")
 async def get_available_task(current_user: dict = Depends(get_current_user)):
@@ -137,8 +172,8 @@ async def get_assigned_task(current_user: dict = Depends(get_current_user)):
         }))
 
     total_assigned = len(tasks)
-    print("in assigned")
-    print(total_assigned)
+   
+    
 
     # if not tasks:
     #     raise HTTPException(status_code=404, detail="No Assigned tasks found")
@@ -183,7 +218,7 @@ async def get_posted_task(current_user: dict = Depends(get_current_user)):
 
 @router.get("/completed")
 async def get_completed_task(current_user: dict = Depends(get_current_user)):
-    print("in completed")
+
     if current_user["role"] == "client":
         tasks = list(tasks_collection.find({
             "status": "completed",
@@ -197,7 +232,7 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
             "assigned_to": str(current_user["_id"])
         }))
     total_completed = len(tasks)
-    print(total_completed)
+  
 
     # if not tasks:
     #     raise HTTPException(status_code=404, detail="No completed tasks found")
@@ -213,16 +248,22 @@ async def get_completed_task(current_user: dict = Depends(get_current_user)):
              task["agency_id"] = str(task["agency_id"])
         elif current_user["role"] in ["agency_owner","freelancer","client"] :
             task["client_id"] = str(task["client_id"])
-    notification = {
-        "user_id": task["client_id"],
-        "message": f"Your task '{task['title']}' has been marked as completed."
-    }
-    notifications_collection.insert_one(notification)
+   
 
 
     return {"tasks": tasks,"total_completed":total_completed}
 
 
+@router.get("/tasks/{task_id}/check-payment")
+async def check_subtasks_payment_status(task_id: str):
+    subtasks = list(tasks_collection.find({"task_id": task_id, "category": "subtask"}))
+
+    if not subtasks:
+        raise HTTPException(status_code=404, detail="No subtasks found for this task")
+
+    is_paid = all(bool(subtask.get("is_paid", False)) for subtask in subtasks)
+
+    return {"task_id": task_id, "is_paid": is_paid}
 
 @router.get("/{task_id}")
 async def get_task(task_id: str, current_user: dict = Depends(get_current_user)):
@@ -264,7 +305,7 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # 🔒 Authorization check
+   
     if current_user["role"] in ["agency_freelancer", "agency_owner", "freelancer"] and task["assigned_to"] != str(current_user["_id"]):
         raise HTTPException(status_code=403, detail="Unauthorized to update this task")
     elif current_user["role"] == "client" and task["client_id"] != current_user["_id"]:
@@ -272,35 +313,65 @@ async def update_posted_task(task_id: str, update_data: Taskupdate, current_user
 
     update_dict = update_data.dict(exclude_none=True)
     tasks_collection.update_one({"_id": ObjectId(task_id)}, {"$set": update_dict})
+ 
+    if current_user["role"] != "agency_freelancer":
+            if "assigned_to" in update_dict and update_dict["assigned_to"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(update_dict["assigned_to"]),
+                    "message": f"You have been assigned a new task: {task['title']}",
+                    
+                })
 
-    # 🔔 Notifications
-    if "assigned_to" in update_dict and update_dict["assigned_to"]:
-        notifications_collection.insert_one({
-            "user_id": ObjectId(update_dict["assigned_to"]),
-            "message": f"You have been assigned a new task: {task['title']}",
-            
-        })
+            if "status" in update_dict and update_dict["status"] == "completed":
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["client_id"]),
+                    "message": f"Your task '{task['title']}' has been marked as completed.",
+                    
+                })
 
-    if "status" in update_dict and update_dict["status"] == "completed":
-        notifications_collection.insert_one({
-            "user_id": ObjectId(task["client_id"]),
-            "message": f"Your task '{task['title']}' has been marked as completed.",
-            
-        })
+            if "is_approved" in update_dict and update_dict["is_approved"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["assigned_to"]),
+                    "message": f"Your task '{task['title']}' has been approved!",
+                
+                })
 
-    if "is_approved" in update_dict and update_dict["is_approved"]:
-        notifications_collection.insert_one({
-            "user_id": ObjectId(task["assigned_to"]),
-            "message": f"Your task '{task['title']}' has been approved!",
-          
-        })
+            if "is_paid" in update_dict and update_dict["is_paid"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["assigned_to"]),
+                    "message": f"Payment has been made for your task: {task['title']}",
+                
+                })
 
-    if "is_paid" in update_dict and update_dict["is_paid"]:
-        notifications_collection.insert_one({
-            "user_id": ObjectId(task["assigned_to"]),
-            "message": f"Payment has been made for your task: {task['title']}",
-          
-        })
+    else: 
+            if "assigned_to" in update_dict and update_dict["assigned_to"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(update_dict["assigned_to"]),
+                    "message": f"You have been assigned a new task",
+                
+            })
+
+            if "status" in update_dict and update_dict["status"] == "completed":
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["agency_id"]),
+                    "message": f"Your subtask  has been marked as completed. from freelancer {current_user["name"]}",
+                    
+                })
+
+            if "is_approved" in update_dict and update_dict["is_approved"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["assigned_to"]),
+                    "message": f"Your task has been approved!",
+                
+                })
+
+            if "is_paid" in update_dict and update_dict["is_paid"]:
+                notifications_collection.insert_one({
+                    "user_id": ObjectId(task["assigned_to"]),
+                    "message": f"Payment has been made for your task",
+                
+                })
+
 
     return {"message": "Task updated successfully"}
 

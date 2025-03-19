@@ -10,7 +10,7 @@ const ManageAgency = () => {
 
   const [completedTasks, setCompletedTasks] = useState([]);
   const [subtasks, setSubtasks] = useState([]);
-  const [isPaid, setIsPaid] = useState({});
+  const [isPaid, setIsPaid] = useState({}); 
 
   useEffect(() => {
     fetchFreelancers();
@@ -27,59 +27,79 @@ const ManageAgency = () => {
     }
   };
 
-  
+
   const fetchCompletedTasks = async () => {
     try {
       const response = await API.get("/tasks/completed");
-      const tasks = response.data.tasks.filter(task => task.agency_id === storedUser._id);
-      setCompletedTasks(tasks);
-
+  
      
+      const tasks = response.data.tasks.filter(task => task.assigned_to === storedUser.id);
+      console.log(tasks);
+      setCompletedTasks(tasks);
+  
+    
       fetchSubtasks(tasks);
     } catch (error) {
       console.error("Error fetching completed tasks:", error);
     }
   };
-
   
+
   const fetchSubtasks = async (tasks) => {
     try {
       const subtaskResponse = await API.get("/tasks/getsubtask");
+      console.log(subtaskResponse);
+  
+     
+      // const relatedSubtasks = subtaskResponse.data.tasks.filter(subtask =>
+      //   tasks.some(task => String(task._id) === String(subtask.task_id))
+      // );
+      const taskIds = new Set(tasks.map(task => String(task._id))); 
+
       const relatedSubtasks = subtaskResponse.data.tasks.filter(subtask =>
-        tasks.some(task => task._id === subtask.parent_task_id)
+      taskIds.has(String(subtask.task_id)) 
       );
-
-      setSubtasks(relatedSubtasks);
-
+     
+  
+     
       
-      checkPaymentStatus(tasks);
+      setSubtasks(relatedSubtasks);
+  
+     
+      checkPaymentStatus(relatedSubtasks);
     } catch (error) {
       console.error("Error fetching subtasks:", error);
     }
   };
-
   
-  const checkPaymentStatus = async (tasks) => {
+
+  const checkPaymentStatus = async (subtasks) => {
     const paymentStatus = {};
-    for (let task of tasks) {
+  
+    for (let subtask of subtasks) {
       try {
-        const paymentResponse = await API.get(`/payments/task/${task._id}`);
-        paymentStatus[task._id] = paymentResponse.data.status === "paid";
+       
+       // const paymentResponse = await API.get(`/payments/task/${subtask.task_id}`);
+        let subtaskPaid = subtask.is_paid !== true;
+  
+        
+        paymentStatus[subtask.task_id] = !subtaskPaid;
       } catch (error) {
         console.error("Error checking payment status:", error);
-        paymentStatus[task._id] = false; 
+        paymentStatus[subtask.task_id] = true; 
       }
     }
+  
     setIsPaid(paymentStatus);
   };
-
   
+ 
   const handleAddFreelancer = async (e) => {
     e.preventDefault();
     try {
       await API.post("/users/addfreelancer", {
         ...newFreelancer,
-        agency_id: storedUser._id,
+        agency_id: storedUser.id, 
       });
       alert("Freelancer added successfully!");
       fetchFreelancers();
@@ -89,7 +109,7 @@ const ManageAgency = () => {
     }
   };
 
- 
+  
   const handleRemoveFreelancer = async (freelancerId) => {
     try {
       await API.delete(`/users/deletefreelancer/${freelancerId}`);
@@ -146,9 +166,9 @@ const ManageAgency = () => {
         <ul>
           {agencyFreelancers.length > 0 ? (
             agencyFreelancers.map((freelancer) => (
-              <li key={freelancer._id}>
+              <li key={freelancer.id}>
                 {freelancer.name} - {freelancer.skill}
-                <button className="remove-btn" onClick={() => handleRemoveFreelancer(freelancer._id)}>
+                <button className="remove-btn" onClick={() => handleRemoveFreelancer(freelancer.id)}>
                   Remove
                 </button>
               </li>
@@ -159,7 +179,7 @@ const ManageAgency = () => {
         </ul>
       </div>
 
-  
+      
       <div className="completed-tasks">
         <h3>Completed Tasks</h3>
         <ul>
@@ -167,11 +187,12 @@ const ManageAgency = () => {
             completedTasks.map((task) => (
               <li key={task._id}>
                 {task.title} - {task.status}
+                
+                
                 {!isPaid[task._id] ? (
                   <Link to={`/agency-payment/${task._id}`} className="pay-btn">
-                  Pay Freelancers & Receive Cut
-                </Link>
-                
+                    Pay Freelancers & Receive Cut
+                  </Link>
                 ) : (
                   <span className="paid-status">Paid</span>
                 )}

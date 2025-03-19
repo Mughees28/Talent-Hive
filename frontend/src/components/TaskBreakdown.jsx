@@ -27,6 +27,7 @@ const TaskBreakdown = () => {
       console.error("Error fetching task details:", error);
     }
   };
+  
 
   const fetchAgencyFreelancers = async () => {
     try {
@@ -49,10 +50,12 @@ const TaskBreakdown = () => {
         ...newSubtask,
         assigned_to: selectedFreelancer,
         task_id: taskId,
-      });
+      }
+    );
 
       alert("Subtask created successfully!");
-      setNewSubtask({ description: "", deadline: "" });
+      setNewSubtask({ title: "", description: "", deadline: "" });
+      setSelectedFreelancer("")
       fetchTaskDetails(); 
     } catch (error) {
       console.error("Error creating subtask:", error);
@@ -77,6 +80,13 @@ const TaskBreakdown = () => {
         <form onSubmit={handleSubtaskSubmit}>
           <input
             type="text"
+            placeholder="Subtask Title"
+            value={newSubtask.title}
+            onChange={(e) => setNewSubtask({ ...newSubtask, title: e.target.value })}
+            required
+          />
+          <input
+            type="text"
             placeholder="Subtask Description"
             value={newSubtask.description}
             onChange={(e) => setNewSubtask({ ...newSubtask, description: e.target.value })}
@@ -89,7 +99,11 @@ const TaskBreakdown = () => {
             onChange={(e) => setNewSubtask({ ...newSubtask, deadline: e.target.value })}
             required
           />
-          <select value={selectedFreelancer} onChange={(e) => setSelectedFreelancer(e.target.value)} required>
+          <select 
+            value={selectedFreelancer} 
+            onChange={(e) => setSelectedFreelancer(e.target.value)} 
+            required
+          >
             <option value="">Assign to Freelancer</option>
             {agencyFreelancers.map((freelancer) => (
               <option key={freelancer._id} value={freelancer._id}>

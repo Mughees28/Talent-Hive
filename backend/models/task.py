@@ -19,6 +19,7 @@ class Taskupdate(BaseModel):
 
    
 class SubTaskcreate(BaseModel):
+    title: str
     task_id: str
     description: str
     deadline: str

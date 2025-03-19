@@ -19,11 +19,11 @@ const AgencyPayment = () => {
         const taskResponse = await API.get(`/tasks/${taskId}`);
         setTask(taskResponse.data);
 
-        // Fetch subtasks (agency freelancers' work)
+        
         const subtaskResponse = await API.get(`/tasks/getsubtask`);
         const subtasks = subtaskResponse.data.tasks || [];
 
-        // Check if all freelancers are paid
+        
         const allPaid = subtasks.every(subtask => subtask.is_paid === true);
         setFreelancersPaid(allPaid);
 

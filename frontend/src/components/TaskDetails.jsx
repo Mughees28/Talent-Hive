@@ -70,7 +70,7 @@ const TaskDetails = () => {
               <input
                 type="radio"
                 name="selectedBid"
-                disabled={selectedBid || task.is_paid}
+                disabled={selectedBid || task.status ==="assigned" || task.status ==="completed"}
                 value={bid.bidder_id}
                 onChange={() =>{ setSelectedBid(bid.bidder_id);
                                 setSelectedBidAmount(bid.amount)

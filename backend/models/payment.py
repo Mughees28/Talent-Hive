@@ -11,6 +11,5 @@ class Paymentcreate(BaseModel):
 
 class Agencypayment(BaseModel):
     task_id : str
-    
     status: str = "pending" 
     

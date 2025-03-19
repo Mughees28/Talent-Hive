@@ -21,6 +21,7 @@ const ReviewPayment = () => {
         const response = await API.get(`/tasks/${taskId}`);
         setTask(response.data);
         setIsApproved(response.data.is_approved);
+        setIsPaid(response.data.is_paid);
       } catch (error) {
         console.error("Error fetching task details:", error);
       } finally {
@@ -31,30 +32,21 @@ const ReviewPayment = () => {
     fetchTaskDetails();
   }, [taskId]);
 
-  const handleApprove = async () => {
+  const handleApproveAndPay = async () => {
     try {
       await API.put(`/tasks/${taskId}/approve`, { is_approved: true });
-      alert("Task approved! You can now proceed to payment.");
-      setIsApproved(true);
-    } catch (error) {
-      console.error("Error approving task:", error);
-      alert("Failed to approve the task.");
-    }
-  };
-
-  const handlePayment = async () => {
-    try {
       await API.post("/payments", {
         task_id: taskId,
-        receiver_id: task.assigned_to, 
-        total_amount: task.selectedbid_amount, 
+        receiver_id: task.assigned_to,
+        total_amount: task.selectedbid_amount,
         status: "paid",
       });
-      alert("Payment successful!");
+      alert("Task approved and payment successful!");
+      setIsApproved(true);
       setIsPaid(true);
     } catch (error) {
-      console.error("Error processing payment:", error);
-      alert("Failed to process payment.");
+      console.error("Error processing approval and payment:", error);
+      alert("Failed to approve and process payment.");
     }
   };
 
@@ -86,7 +78,7 @@ const ReviewPayment = () => {
     <div className="review-payment-container">
       <h2>Review & Payment</h2>
 
-    
+     
       <div className="task-details">
         <h3>{task.title}</h3>
         <p><strong>Description:</strong> {task.description}</p>
@@ -95,49 +87,39 @@ const ReviewPayment = () => {
         <p><strong>Status:</strong> {task.status}</p>
       </div>
 
-    
+  
       <div className="submitted-work">
         <h3>Work Submitted</h3>
-        <p>
-          {`${task.title}.zip`}
-        </p>
+        <p>{`${task.title}.zip`}</p>
       </div>
 
-     
-      {!isApproved ? (
+      
+      {!isApproved && !isPaid ? (
         <div className="approval-section">
-          <button onClick={handleApprove} className="approve-btn">Approve & Pay</button>
+          <button onClick={handleApproveAndPay} className="approve-btn">
+            Approve & Pay ${task.selectedbid_amount}
+          </button>
         </div>
       ) : (
         <>
-          
-          {!isPaid ? (
-            <div className="payment-section">
-              {/* <p><strong>Amount to Pay:</strong> ${task.selectedbid_amount}</p> */}
-              <button onClick={handlePayment} className="payment-btn">Pay ${task.selectedbid_amount}</button>
-            </div>
-          ) : (
-            <>
-              <p className="paid-message">Payment completed successfully!</p>
+          <p className="paid-message">Payment completed successfully!</p>
 
-            
-              <div className="review-section">
-                <h3>Leave a Review</h3>
-                <label>Rating:</label>
-                <select value={rating} onChange={(e) => setRating(e.target.value)}>
-                  {[5, 4, 3, 2, 1].map((num) => (
-                    <option key={num} value={num}>{num} Stars</option>
-                  ))}
-                </select>
-                <textarea
-                  placeholder="Write a comment (optional)"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-                <button onClick={handleReviewSubmit} className="submit-review-btn">Submit Review</button>
-              </div>
-            </>
-          )}
+       
+          <div className="review-section">
+            <h3>Leave a Review</h3>
+            <label>Rating:</label>
+            <select value={rating} onChange={(e) => setRating(e.target.value)}>
+              {[5, 4, 3, 2, 1].map((num) => (
+                <option key={num} value={num}>{num} Stars</option>
+              ))}
+            </select>
+            <textarea
+              placeholder="Write a comment (optional)"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <button onClick={handleReviewSubmit} className="submit-review-btn">Submit Review</button>
+          </div>
         </>
       )}
     </div>
